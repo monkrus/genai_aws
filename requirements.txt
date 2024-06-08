@@ -1,0 +1,13 @@
+libffi
+openssl
+pip
+python
+setuptoola
+sqlite
+tk
+tzdata
+vc
+vs2015_runtime
+wheel
+xz
+zlib
