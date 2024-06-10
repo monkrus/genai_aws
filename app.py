@@ -1,32 +1,33 @@
-import boto3  # AWS SDK for Python to interact with AWS services
-import botocore.config  # Configuration for Boto3 clients
-import json  # For handling JSON data
+import boto3
+import botocore.config
+import json
+
 from datetime import datetime
 
-def blog_generate_using_bedrock(blogtopic: str) -> str:
-    prompt = f"""<s>[INST]Human: Write a 200 words blog on the topic {blogtopic}
+def blog_generate_using_bedrock(blogtopic:str)-> str:
+    prompt=f"""<s>[INST]Human: Write a 200 words blog on the topic {blogtopic}
     Assistant:[/INST]
     """
-    
-    body = {
-        "prompt": prompt,
-        "max_gen_len": 512,
-        "temperature": 0.5,
-        "top_p": 0.9
+
+    body={
+        "prompt":prompt,
+        "max_gen_len":512,
+        "temperature":0.5,
+        "top_p":0.9
     }
-    
+
     try:
-        bedrock = boto3.client("bedrock-runtime", region_name="us-east-1",
-                               config=botocore.config.Config(read_timeout=300, retries={'max_attempts': 3}))
-        response = bedrock.invoke_model(body=json.dumps(body), modelId="meta.llama2-13b-chat-v1")
-        
-        response_content = response['body'].read().decode('utf-8')
-        response_data = json.loads(response_content)
+        bedrock=boto3.client("bedrock-runtime",region_name="us-east-1",
+                             config=botocore.config.Config(read_timeout=300,retries={'max_attempts':3}))
+        response=bedrock.invoke_model(body=json.dumps(body),modelId="meta.llama2-13b-chat-v1")
+
+        response_content=response.get('body').read()
+        response_data=json.loads(response_content)
         print(response_data)
-        blog_details = response_data['generated text']
-        return blog_details 
+        blog_details=response_data['generation']
+        return blog_details
     except Exception as e:
-        print(f"An error generating the blog: {e}")
+        print(f"Error generating the blog:{e}")
         return ""
 
 def save_blog_details_s3(s3_key,s3_bucket,generate_blog):
@@ -63,3 +64,4 @@ def lambda_handler(event, context):
         'body':json.dumps('Blog Generation is completed')
     }
 
+    
